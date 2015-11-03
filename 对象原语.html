@@ -1,0 +1,151 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <title>单页切换</title>
+  <style>
+  *{margin:0;padding:0;}
+  html,body{width:100%;height:100%;overflow:hidden;}
+  .page{position:absolute;top:0;left:0;width:100%;height:100%;color:#fff;display:-webkit-box;
+-webkit-box-orient:horizontal;
+-webkit-box-pack:center;
+-webkit-box-align:center;
+display:box; 
+box-orient:horizontal; 
+box-pack:center; 
+box-align:center;}
+  </style>
+</head>
+<body>
+<div class="page" id="home" style="background-color:#09f;">
+  <a href="#page1">去第二页</a>
+</div>
+<div class="page" id="page1" style="display:none;background-color:#f60;">
+  <a href="#page2">去第三页</a>
+  &nbsp;
+  <a href="#home" data-direction="reverse">返回</a>
+</div>
+<div class="page" id="page2" style="display:none;background-color:#0f0;">
+  <a href="#home">回首页</a>
+  &nbsp;
+  <a href="#page1" data-direction="reverse">返回</a>
+</div>
+<script src="lib/jquery-2.1.4.min.js"></script>
+<script>
+var singlePageCut = {
+  init : function(options) {
+    this.config = {
+      cut   : $('a'),
+      speed : 500        //毫秒
+    }
+
+    //允许重载默认配置
+    $.extend(this.config, options);
+
+    this.setup();
+  },
+
+  setup : function() {
+    this.bindEvent();
+  },
+
+  bindEvent : function(){
+    var self = this;
+
+    this.config.cut.on('click', function(e){
+      self.handler(e);
+    });
+  },
+
+  slideIn : function(pageIn) {
+    var self = this,
+        $this = $(pageIn);
+
+    $this.css({
+      'display' : '-webkit-box',
+      '-webkit-transform' : 'translateX(90%)'
+    });
+
+    setTimeout(function(){
+      $this.css({
+        '-webkit-transition' : 'all ' + self.config.speed + 'ms',
+        '-webkit-transform' : 'translateX(0)'
+      });
+    },20);
+  },
+
+  slideOut : function(pageOut) {
+    var self = this,
+        $this = $(pageOut);
+
+    setTimeout(function(){
+      $this.css({
+        '-webkit-transition' : 'all ' + self.config.speed + 'ms',
+        '-webkit-transform' : 'translateX(-100%)'
+        });
+    },20);
+
+    setTimeout(function(){
+      $this.css({
+          'display' : 'none'
+        });
+    },self.config.speed + 20);
+  },
+
+  back : function(pageIn, pageOut) {
+    var $this = $(pageIn),
+        $that = $(pageOut);
+
+    $this.css({
+      'display' : '-webkit-box'
+    });
+
+    setTimeout(function(){
+      $this.css({
+          '-webkit-transform' : 'translateX(0)'
+        });
+    },20);
+
+    setTimeout(function(){
+      $that.css({
+          '-webkit-transform' : 'translateX(100%)'
+        });
+    },20);
+
+    setTimeout(function(){
+      $that.css({
+          'display' : 'none'
+        });
+    },self.config.speed + 20);
+  },
+
+  handler : function(e) {
+    var el = $(e.target) || $(window.target),
+        pageOut = el.closest('.page'),
+        pageIn = '#'+el.attr('href').replace('#', ''),
+        direction = el.attr('data-direction') || '';
+
+    if (direction === '') {
+      this.slideIn(pageIn);
+      this.slideOut(pageOut);
+    }
+    else if (direction === 'reverse') {
+      this.back(pageIn, pageOut);
+    }
+  }
+}
+
+$(function(){
+  //调用
+  singlePageCut.init({
+    cut : $('a[href^="#"]'),
+    speed : 400
+  });
+});
+</script>
+</body>
+</html>

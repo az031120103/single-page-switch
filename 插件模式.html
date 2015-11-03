@@ -64,7 +64,7 @@ box-align:center;}
       var el = $(e.target) || $(window.target),
           pageOut = el.closest('.page'),
           pageIn = '#'+el.attr('href').replace('#', ''),
-          direction = el.data('direction') || '';
+          direction = el.attr('data-direction') || '';
 
       if (direction === '') {
         this.slideIn(pageIn);
@@ -150,12 +150,10 @@ box-align:center;}
 })();
 
 $(function(){
-
   $.mySinglePageCut({
     'ele' : $('a[href^="#"]'),
     'speed' : 400
   });
-
 });
 </script>
 </body>
