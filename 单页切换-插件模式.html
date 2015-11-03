@@ -1,0 +1,162 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <title>单页切换</title>
+  <style>
+  *{margin:0;padding:0;}
+  html,body{width:100%;height:100%;overflow:hidden;}
+  .page{position:absolute;top:0;left:0;width:100%;height:100%;color:#fff;display:-webkit-box;
+-webkit-box-orient:horizontal;
+-webkit-box-pack:center;
+-webkit-box-align:center;
+display:box; 
+box-orient:horizontal; 
+box-pack:center; 
+box-align:center;}
+  </style>
+</head>
+<body>
+<div class="page" id="home" style="background-color:#09f;">
+  <a href="#page1">去第二页</a>
+</div>
+<div class="page" id="page1" style="display:none;background-color:#f60;">
+  <a href="#page2">去第三页</a>
+  &nbsp;
+  <a href="#home" data-direction="reverse">返回</a>
+</div>
+<div class="page" id="page2" style="display:none;background-color:#0f0;">
+  <a href="#home">回首页</a>
+  &nbsp;
+  <a href="#page1" data-direction="reverse">返回</a>
+</div>
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+//单页切换插件
+;(function(){
+  //定义SinglePageCut的构造函数
+  var SinglePageCut = function(opt){
+    this.defaults = {
+      'ele'   : $('a'),
+      'speed' : 500             //毫秒
+    },
+    this.options = $.extend({}, this.defaults, opt)
+  }
+
+  //定义SinglePageCut的方法
+  SinglePageCut.prototype = {
+    init : function() {
+      this.bindEvent();
+    },
+
+    bindEvent : function(){
+      var self = this;
+      this.options.ele.on('click', function(e){
+        self.handler(e);
+      });
+    },
+
+    handler : function(e) {
+      var el = $(e.target) || $(window.target),
+          pageOut = el.closest('.page'),
+          pageIn = '#'+el.attr('href').replace('#', ''),
+          direction = el.data('direction') || '';
+
+      if (direction === '') {
+        this.slideIn(pageIn);
+        this.slideOut(pageOut);
+      }
+      else if (direction === 'reverse') {
+        this.slideBack(pageIn, pageOut);
+      }
+    },
+
+    slideIn : function(pageIn) {
+      var self = this,
+          $this = $(pageIn);
+
+      $this.css({
+        'display' : '-webkit-box',
+        '-webkit-transform' : 'translateX(90%)'
+      });
+
+      setTimeout(function(){
+        $this.css({
+          '-webkit-transition' : 'all ' + self.options.speed + 'ms',
+          '-webkit-transform' : 'translateX(0)'
+        });
+      },20);
+    },
+
+    slideOut : function(pageOut) {
+      var self = this,
+          $this = $(pageOut);
+
+      setTimeout(function(){
+        $this.css({
+          '-webkit-transition' : 'all ' + self.options.speed + 'ms',
+          '-webkit-transform' : 'translateX(-100%)'
+          });
+      },20);
+
+      setTimeout(function(){
+        $this.css({
+            'display' : 'none'
+          });
+      },self.options.speed + 20);
+    },
+
+    slideBack : function(pageIn, pageOut) {
+      var self = this,
+          $this = $(pageIn),
+          $that = $(pageOut);
+
+      $this.css({
+        'display' : '-webkit-box'
+      });
+
+      setTimeout(function(){
+        $this.css({
+            '-webkit-transform' : 'translateX(0)'
+          });
+      },20);
+
+      setTimeout(function(){
+        $that.css({
+            '-webkit-transform' : 'translateX(100%)'
+          });
+      },20);
+
+      setTimeout(function(){
+        $that.css({
+            'display' : 'none'
+          });
+      },self.options.speed + 20);
+    }
+  }
+
+  //在插件中使用SinglePageCut对象
+  $.mySinglePageCut = function(options){
+    //创建SinglePageCut的实体
+    var singlePageCut = new SinglePageCut(options);
+
+    //调用其方法
+    return singlePageCut.init();
+  };
+})();
+
+$(function(){
+
+  $.mySinglePageCut({
+    'ele' : $('a[href^="#"]'),
+    'speed' : 400
+  });
+
+});
+</script>
+</body>
+</html>
