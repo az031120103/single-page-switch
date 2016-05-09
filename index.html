@@ -61,10 +61,21 @@ box-align:center;}
     },
 
     handler : function(e) {
+      e.preventDefault();
+
       var el = $(e.target) || $(window.target),
           pageOut = el.closest('.page'),
           pageIn = '#'+el.attr('href').replace('#', ''),
           direction = el.data('direction') || '';
+
+      if(history.pushState){
+        var state=({
+          url: pageIn,
+          title: ''
+        });
+
+        window.history.pushState(state, '', pageIn);
+      }
 
       if (direction === '') {
         this.slideIn(pageIn);
@@ -105,8 +116,8 @@ box-align:center;}
 
       setTimeout(function(){
         $this.css({
-            'display' : 'none'
-          });
+          'display' : 'none'
+        });
       },self.options.speed + 20);
     },
 
@@ -121,20 +132,20 @@ box-align:center;}
 
       setTimeout(function(){
         $this.css({
-            '-webkit-transform' : 'translateX(0)'
-          });
+          '-webkit-transform' : 'translateX(0)'
+        });
       },20);
 
       setTimeout(function(){
         $that.css({
-            '-webkit-transform' : 'translateX(100%)'
-          });
+          '-webkit-transform' : 'translateX(100%)'
+        });
       },20);
 
       setTimeout(function(){
         $that.css({
-            'display' : 'none'
-          });
+          'display' : 'none'
+        });
       },self.options.speed + 20);
     }
   }
@@ -150,12 +161,10 @@ box-align:center;}
 })();
 
 $(function(){
-
   $.mySinglePageCut({
     'ele' : $('a[href^="#"]'),
     'speed' : 400
   });
-
 });
 </script>
 </body>
